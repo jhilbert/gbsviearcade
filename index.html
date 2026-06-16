@@ -11,7 +11,7 @@
     --green:#39ff14;--dim:#5a4a8a;--panel:#140828;
     --muted:#b3a8d9;--text:#ece6ff;--rungidle:#9488c4;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{
     font-family:'VT323',monospace;
     background:
@@ -85,9 +85,12 @@
     border:2px solid var(--dim);border-radius:6px;padding:10px 13px;cursor:pointer;transition:.12s;
     letter-spacing:1px;display:flex;align-items:center;gap:11px}
   .opt .key{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--cyan)}
-  .opt:hover:not(:disabled){border-color:var(--cyan);color:#fff;transform:translateX(4px);box-shadow:-4px 0 0 var(--cyan)}
+  @media (hover:hover) and (pointer:fine){
+    .opt:hover:not(:disabled){border-color:var(--cyan);color:#fff;transform:translateX(4px);box-shadow:-4px 0 0 var(--cyan)}
+  }
   .opt:disabled{cursor:default;opacity:.85}
-  .opt:disabled:focus,.opt:disabled:focus-visible{outline:none;box-shadow:none}
+  .opt:focus,.opt:focus-visible{outline:none}
+  .opt:disabled:focus,.opt:disabled:focus-visible{outline:none;box-shadow:none;border-color:var(--dim);transform:none}
   .opt.correct{border-color:var(--green);background:rgba(57,255,20,.12);color:var(--green)}
   .opt.correct .key{color:var(--green)}
   .opt.wrong{border-color:var(--magenta);background:rgba(255,46,151,.12);color:var(--magenta)}
