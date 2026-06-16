@@ -97,7 +97,14 @@
   .feedback.bad{color:var(--magenta)}
   .feedback.bonus{color:var(--yellow);text-shadow:0 0 8px var(--yellow)}
 
-  .guessbar{display:flex;gap:8px;margin-top:16px;border-top:2px dashed var(--dim);padding-top:14px}
+  .guesses{display:flex;align-items:center;gap:10px;margin-top:16px;border-top:2px dashed var(--dim);padding-top:14px}
+  .guesses .glabel{font-family:'Press Start 2P',monospace;font-size:9px;color:var(--muted);letter-spacing:1px}
+  .gpips{display:flex;gap:6px;align-items:center}
+  .gpip{font-size:20px;line-height:1;transition:.25s;color:var(--green);text-shadow:0 0 7px var(--green)}
+  .gpip.used{color:#3a2a55;text-shadow:none;transform:scale(.8)}
+  .gpip.low{color:var(--magenta);text-shadow:0 0 8px var(--magenta);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.45}}
+  .guessbar{display:flex;gap:8px;margin-top:12px}
   .guessbar input{flex:1;font-family:'VT323',monospace;font-size:20px;background:#0a0418;
     color:var(--yellow);border:2px solid var(--cyan);border-radius:6px;padding:10px 12px;letter-spacing:2px;outline:none}
   .guessbar input::placeholder{color:var(--muted);letter-spacing:1px}
@@ -126,7 +133,7 @@
 <body>
 <div class="machine">
   <div class="title">GBS VIE ARCADE</div>
-  <div class="sub">GUESS THE <b>TEAM</b></div>
+  <div class="sub">REMEMBER THE <b>NAMES?</b></div>
 
   <div class="grid">
     <div>
@@ -151,11 +158,15 @@
         <div class="opts" id="opts"></div>
         <div class="feedback" id="feedback"></div>
 
+        <div class="guesses" id="guesses">
+          <span class="glabel">GUESSES LEFT</span>
+          <span class="gpips" id="gpips"></span>
+        </div>
         <div class="guessbar">
           <input id="guess" type="text" placeholder="TYPE THE FIRST NAME…" autocomplete="off">
           <button id="guessBtn">GUESS ▶</button>
         </div>
-        <div class="guesshelp" id="guesshelp">Guess early for a bigger <b>★ BONUS</b> — but a wrong guess costs <b style="color:var(--magenta)">-30</b></div>
+        <div class="guesshelp" id="guesshelp">Guess early for a bigger <b>★ BONUS</b> — wrong guess <b style="color:var(--magenta)">-30</b>. Run out and the name auto-reveals for <b style="color:var(--magenta)">-100</b></div>
 
         <button class="next" id="next">NEXT MEMBER ▶</button>
       </div>
@@ -208,14 +219,14 @@ const ROSTER = [
    ===================================================================== */
 const BANK = [
   // ---------- SAP ----------
-  {cat:"SAP", q:"SAP S/4HANA runs exclusively on which database?",
-   opts:["Oracle DB","SAP HANA","MySQL","MongoDB"], answer:1},
+  {cat:"SAP", q:"SAP's generative-AI copilot, introduced across its products, is named…",
+   opts:["Joule","Cortana","Watson","Einstein"], answer:0},
   {cat:"SAP", q:"In SAP, the module 'FI' stands for…",
    opts:["File Index","Financial Accounting","Field Input","Fast Integration"], answer:1},
   {cat:"SAP", q:"SAP Fiori primarily defines the…",
    opts:["Database engine","User experience / UI","Network protocol","Tax engine"], answer:1},
-  {cat:"SAP", q:"What does the 'P' in 'SAP' historically stand for?",
-   opts:["Platform","Products","Processing","Programming"], answer:1},
+  {cat:"SAP", q:"In which year was SAP founded?",
+   opts:["1958","1972","1989","2004"], answer:1},
   {cat:"SAP", q:"The MM module in SAP manages…",
    opts:["Materials Management","Mobile Marketing","Memory Mapping","Master Mail"], answer:0},
   {cat:"SAP", q:"ABAP is SAP's proprietary…",
@@ -228,8 +239,8 @@ const BANK = [
    opts:["In-memory database","Email client","Web browser","Backup tape system"], answer:0},
   {cat:"SAP", q:"A 'transaction code' (T-Code) in SAP GUI lets you…",
    opts:["Encrypt passwords","Jump directly to a function","Reboot the server","Pay invoices"], answer:1},
-  {cat:"SAP", q:"SAP's flagship cloud ERP suite is called…",
-   opts:["SAP R/2","SAP S/4HANA Cloud","SAP Notepad","SAP Excel"], answer:1},
+  {cat:"SAP", q:"In SAP, changes are moved between systems using a mechanism called a…",
+   opts:["Transport Request","Patch File","Data Pump","Merge Commit"], answer:0},
   {cat:"SAP", q:"In SAP, 'HCM' deals with…",
    opts:["Hardware Control","Human Capital Management","Host Connection Mgr","High Capacity Memory"], answer:1},
   {cat:"SAP", q:"In modern SAP, CDS Views are used mainly for…",
@@ -264,8 +275,8 @@ const BANK = [
    opts:["Beethoven","Mozart","Bach","Chopin"], answer:1},
   {cat:"AT", q:"A 'Melange' ordered in a Vienna café is a type of…",
    opts:["Pastry","Coffee","Wine","Sausage"], answer:1},
-  {cat:"AT", q:"Austria's official language is…",
-   opts:["Austrian","German","Swiss","Bavarian"], answer:1},
+  {cat:"AT", q:"Which Austrian-born actor became a Hollywood star and Governor of California?",
+   opts:["Arnold Schwarzenegger","Christoph Waltz","Klaus Maria Brandauer","Hedy Lamarr"], answer:0},
   {cat:"AT", q:"The Schönbrunn Palace was the summer residence of which dynasty?",
    opts:["Habsburgs","Bourbons","Romanovs","Tudors"], answer:0},
   {cat:"AT", q:"How many states (Bundesländer) does Austria have?",
@@ -274,8 +285,8 @@ const BANK = [
    opts:["Chocolate cake","Sausage","Beer","Cheese"], answer:0},
   {cat:"AT", q:"The Danube river in German is called…",
    opts:["Rhein","Donau","Elbe","Mosel"], answer:1},
-  {cat:"AT", q:"Vienna is consistently ranked highly for its…",
-   opts:["Beaches","Quality of life / livability","Ski jumps downtown","Deserts"], answer:1},
+  {cat:"AT", q:"The red-white-red flag of Austria is one of the world's oldest. The middle stripe is…",
+   opts:["White","Blue","Yellow","Green"], answer:0},
   {cat:"AT", q:"Which border-sharing country lies just east of Vienna?",
    opts:["Switzerland","Slovakia","France","Poland"], answer:1},
   {cat:"AT", q:"A common friendly Austrian greeting is…",
@@ -386,11 +397,13 @@ const BANK = [
 
 const KEYS=["A","B","C","D"];
 const BASE_LETTER_PTS=50, MAX_BONUS=500, MIN_BONUS=100;
+const MAX_GUESSES=5, WRONG_GUESS_PEN=30, AUTO_REVEAL_PEN=100;
 
 let idx=0, score=0, bonuses=0;
 let revealed=0, letterCells=[], solvedThisMember=false, answeredThis=false;
 let currentQ=null;
 let globalPool=[];   // questions not yet shown anywhere in this game
+let guessesLeft=MAX_GUESSES;
 
 /* Fisher-Yates shuffle */
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -447,14 +460,26 @@ function currentBonus(){
   const frac=revealed/total;
   return Math.max(MIN_BONUS,Math.round(MAX_BONUS-(MAX_BONUS-MIN_BONUS)*frac));
 }
+function renderPips(){
+  const box=document.getElementById('gpips');
+  box.innerHTML='';
+  for(let i=0;i<MAX_GUESSES;i++){
+    const s=document.createElement('span');
+    const used=i>=guessesLeft;
+    s.className='gpip'+(used?' used':'')+(!used&&guessesLeft<=2?' low':'');
+    s.textContent=used?'○':'●';
+    box.appendChild(s);
+  }
+}
 
 function loadMember(){
   const m=ROSTER[idx];
-  revealed=0; solvedThisMember=false; answeredThis=false;
+  revealed=0; solvedThisMember=false; answeredThis=false; guessesLeft=MAX_GUESSES;
   document.getElementById('lvl').textContent=`STAGE ${String(idx+1).padStart(2,'0')}/${String(ROSTER.length).padStart(2,'0')}`;
   document.getElementById('who').textContent=`MEMBER ${String(idx+1).padStart(2,'0')} — REVEAL THE LAST NAME`;
   document.getElementById('hint').textContent='First name: '+('• '.repeat(m.firstName.length)).trim();
   buildLastName();
+  renderPips();
   nextQuestion();
   document.getElementById('feedback').textContent='';
   document.getElementById('feedback').className='feedback';
@@ -462,7 +487,7 @@ function loadMember(){
   const g=document.getElementById('guess');
   g.value=''; g.disabled=false;
   document.getElementById('guessBtn').disabled=false;
-  document.getElementById('guesshelp').innerHTML='Guess early for a bigger <b>★ BONUS</b> — but a wrong guess costs <b style="color:var(--magenta)">-30</b>';
+  document.getElementById('guesshelp').innerHTML='Guess early for a bigger <b>★ BONUS</b> — wrong guess <b style="color:var(--magenta)">-30</b>. Run out and the name auto-reveals for <b style="color:var(--magenta)">-100</b>';
 }
 
 function nextQuestion(){
@@ -531,9 +556,21 @@ function submitGuess(){
     while(revealed<letterCells.length) revealLetter();
     finishMember(true);
   }else{
-    score=Math.max(0,score-30);
-    fb.textContent='✘ Wrong first name! -30 — keep answering to reveal more letters';
-    fb.className='feedback bad';
+    guessesLeft--;
+    score=Math.max(0,score-WRONG_GUESS_PEN);
+    renderPips();
+    if(guessesLeft<=0){
+      // out of guesses: auto-reveal the full name with a bigger penalty
+      score=Math.max(0,score-AUTO_REVEAL_PEN);
+      solvedThisMember=true;
+      while(revealed<letterCells.length) revealLetter();
+      fb.innerHTML='✘ OUT OF GUESSES! -'+WRONG_GUESS_PEN+' -'+AUTO_REVEAL_PEN+' — it was '+m.firstName.toUpperCase()+' '+m.lastName.toUpperCase();
+      fb.className='feedback bad';
+      finishMember(false);
+    }else{
+      fb.textContent='✘ Wrong first name! -'+WRONG_GUESS_PEN+' — '+guessesLeft+' guess'+(guessesLeft===1?'':'es')+' left';
+      fb.className='feedback bad';
+    }
   }
   document.getElementById('score').textContent='SCORE '+score;
 }
